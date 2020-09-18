@@ -5,10 +5,10 @@ pd.options.display.float_format = '{:.1f}'.format
 
 
 
-groupby_domains = pd.read_csv('DATA/Domains clustered.csv')
+groupby_domains = pd.read_csv('Domains clustered.csv')
 @st.cache
 def load_daily_data():
-    return pd.read_csv('DATA/Daily Report.csv')
+    return pd.read_csv('Daily Report.csv')
 daily_data = load_daily_data()
 
 st.title('Find the domains that fit better to your campaign ')
@@ -139,7 +139,7 @@ else:
  #CLUSTER 2
     
     if (panel_region == "South America") & (panel_category=="News & Portals"):
-        cluster2= pd.read_csv('DATA/Global Cluster 2.csv')
+        cluster2= pd.read_csv('Global Cluster 2.csv')
         panel_fl2 = st.selectbox('Choose a range of daily traffic', ('20.000-80.000', '80.000-160.000','160.000-300.000','300.000-500.000',
                                                           '500.000-800.000', '800.000-1.000.000'))
 
@@ -195,7 +195,7 @@ else:
  #CLUSTER 1   
 
     elif (panel_region == "Others") & (panel_category=="News & Portals"):
-        cluster1= pd.read_csv('DATA/Global Cluster 1.csv')
+        cluster1= pd.read_csv('Global Cluster 1.csv')
         panel_fl1 = st.selectbox('Choose a range of daily traffic', ('20.000-90.000', '130.000-220.000','220.000-460.000',
                                                           '500.000-725.000', '840.000-1.000.000', '1.700.000'))
 
@@ -256,7 +256,7 @@ else:
  #CLUSTER 4   
 
     elif (panel_region == "South America") & (panel_category=="Others"):
-        cluster4= pd.read_csv('DATA/Global Cluster 4.csv')
+        cluster4= pd.read_csv('Global Cluster 4.csv')
         panel_fl4 = st.selectbox('Choose a range of daily traffic', ('20.000-110.000', '110.000-315.000',
                                                           '350.000-600.000', '700.000-1.050.000'))
         def cluster4_operations(data):
@@ -308,7 +308,7 @@ else:
  #CLUSTER 3   
 
     elif (panel_region == "Others") & (panel_category=="Others"):
-        cluster3= pd.read_csv('DATA/Global Cluster 3.csv')
+        cluster3= pd.read_csv('Global Cluster 3.csv')
         panel_fl3 = st.selectbox('Choose a range of daily traffic', ('20.000-65.000', '65.000-150.000','150.000-270.000','280.000-500.000',
                                                           '630.000-920.000', '2.700.000'))
 
