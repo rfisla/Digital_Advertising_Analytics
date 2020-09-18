@@ -1,28 +1,27 @@
+import SessionState
 import streamlit as st
 import pandas as pd
 import altair as alt
 pd.options.display.float_format = '{:.1f}'.format 
 
 
-
-groupby_domains = pd.read_csv('Domains clustered.csv')
+groupby_domains = pd.read_csv('DATA/Domains clustered.csv')
 @st.cache
 def load_daily_data():
-    return pd.read_csv('Daily Report.csv')
+    return pd.read_csv('DATA/Daily Report.csv')
 daily_data = load_daily_data()
 
-st.title('Find the domains that fit better to your campaign ')
+
+st.title(":chart_with_upwards_trend: WEBSITES ANALYTICS AND RECOMMENDATIONS")
 
 
+st.header('***Find the domains that fit better to your campaign***')
 
-st.header('This is the test to offer to the advertisers the domains that fit better in their campaigns')
+st.sidebar.header(":gear: PANELS")
 
-st.sidebar.header('User Input Parameters')
-
-if st.sidebar.button('Press for info'):
-    st.write('Has apretado')
 
 #Function to display the trend graphs
+
 def trend_graphs(data):
     trend_line_formatloads = alt.Chart(data).mark_line(color='#F18727').encode(
         x="yearmonth(Time):T",
@@ -45,13 +44,15 @@ def trend_graphs(data):
     st.altair_chart(trends_domain, use_container_width=True)
 
 #DIPLAYING THE TWO MAIN PANELS
-panel = st.sidebar.selectbox('Choose a panel', ( "User free use", "Recommendations"))
+panel = st.sidebar.selectbox('Choose a panel', ( "Free use", "Recommendations"))
 
+            
 #USER FREE USE PANEL
-if panel == "User free use" :
+if panel == "Free use":
+    st.markdown('##  FREE USE PANEL')
 
     #Region filtering
-    st.markdown('### Region filter')
+    st.write('### :earth_americas: Region filter')
     regions = groupby_domains['Geographical zone'].unique()
     regions_selected= st.multiselect('In wich region/s do you want to deploy your campaign?', regions)
     st.write('You selected', len(regions_selected), 'regions')
@@ -60,19 +61,22 @@ if panel == "User free use" :
 
 
     #Categories filtering
-    st.markdown('### Category filter')
+    st.markdown('### :books: Category filter')
     categories = region_filter['Category'].unique()
-    categories_selected = st.multiselect('Select the categories you are interested on', categories)
+    categories_selected = st.multiselect('Select the categories you are interested in', categories)
     categories_filter = region_filter[region_filter['Category'].isin(categories_selected)].iloc[:,0:]
 
 
     #Order by filtering and displaying the filtered DF
+
+    st.write('This selection has', len(categories_filter),' domains.')
+
     columns = categories_filter.columns.unique()
     order_selected= st.selectbox('Choose the parameter to order by', columns)
 
     orderby_filter = categories_filter.sort_values(by= order_selected, ascending=False).reset_index(drop=True)
     
-    st.write('### Filtered domains', orderby_filter)
+    st.write('### :mag_right: Filtered domains', orderby_filter)
 
     #Button with the information about the columns
     if st.checkbox('Press for info about the columns'):
@@ -90,21 +94,24 @@ if panel == "User free use" :
 
 
     #Selecting row by row the desirable group
-    selected_indices = st.multiselect('Select your group of Domains by row:', orderby_filter.index)
+
+    selected_indices = st.multiselect('Customize your group of Domains selecting by index:', orderby_filter.index)
     selected_rows = orderby_filter.loc[selected_indices]
-    st.write('### Selected Domains', selected_rows)
+    
+    st.write('### :clipboard:Final selection', selected_rows)
     
     #Displaying the tendency grapghs of the domain in a hide box:
-    if st.checkbox('Show the average tendencies of the selected group'):
+    if st.checkbox('Show the average tendencies and the main statistics of the selected group'):
         domains_selected = selected_rows['Domain']
         group_historic = daily_data[daily_data['Domain'].isin(domains_selected)]
         trend_graphs(group_historic)
-        st.write('Main statistics of the group', selected_rows.describe())
+        st.write( selected_rows.describe())
 
     #Individualized Domain Search
 
-    st.write('### Individualized Domain Search')
-    domain_search = st.text_input('Enter the name of the Domain','')
+    st.markdown('## **Individualized Domain Search**')
+    domain_search = st.text_input('Enter the name','')
+    
 
     if st.button('Submit'):
 
@@ -130,36 +137,44 @@ if panel == "User free use" :
 
 #RECOMMENDATIONS PANEL
 else:
-    st.write('RECOMMENDATIONS PANEL')
+    st.markdown('## RECOMMENDATIONS PANEL')
 
-    panel_region = st.selectbox('Choose a Region', ( "South America", "Others"))
-    panel_category = st.selectbox('Choose a Category', ( "News & Portals", "Others"))
+     #Region filter
+    st.write('### :earth_americas: Region')
+    panel_region = st.selectbox('Choose a Region', ("", "South America", "Others"))
+    #Category filter
+    st.markdown('### :books: Category filter')
+    panel_category = st.selectbox('Choose a Category', ("", "News & Portals", "Others"))
 
  
  #CLUSTER 2
     
     if (panel_region == "South America") & (panel_category=="News & Portals"):
-        cluster2= pd.read_csv('Global Cluster 2.csv')
+        cluster2= pd.read_csv('DATA/Global Cluster 2.csv')
         panel_fl2 = st.selectbox('Choose a range of daily traffic', ('20.000-80.000', '80.000-160.000','160.000-300.000','300.000-500.000',
                                                           '500.000-800.000', '800.000-1.000.000'))
 
         def cluster2_operations(data):
+            
             st.write('The recommended group has', len(data),' domains.')
             st.write('You can order by any variable clicking in the name column')
             st.dataframe(data.iloc[:,2:])
 
             #Displaying the tendency grapghs of the table in a hidden box::
-            if st.checkbox('Show the average tendencies and main statistics of the recommended group'):
+            if st.checkbox('Show the average tendencies and main statistics of the recommended group'): 
                 recommended_group = data['Domain']
                 recommended_group_historic = daily_data[daily_data['Domain'].isin(recommended_group)]
                 trend_graphs(recommended_group_historic)
                 st.write('Characteristics of the group', data.iloc[:,1:].describe())
             
             #Selecting the desirable domains
-            selected_indices = st.multiselect('Select your group of Domains by row:', data.index)
+            
+            selected_indices = st.multiselect('Customize your own selection selecting by index:', data.index)
             selected_rows = data.loc[selected_indices]
             st.write('### Selected Domains', selected_rows)
             
+
+
             #Displaying the tendency grapghs of the domains selected in a hidden box:
             if st.checkbox('Show the average tendencies and main statistics of the selected group'):
                 domains_selected = selected_rows['Domain']
@@ -195,7 +210,7 @@ else:
  #CLUSTER 1   
 
     elif (panel_region == "Others") & (panel_category=="News & Portals"):
-        cluster1= pd.read_csv('Global Cluster 1.csv')
+        cluster1= pd.read_csv('DATA/Global Cluster 1.csv')
         panel_fl1 = st.selectbox('Choose a range of daily traffic', ('20.000-90.000', '130.000-220.000','220.000-460.000',
                                                           '500.000-725.000', '840.000-1.000.000', '1.700.000'))
 
@@ -208,7 +223,7 @@ else:
 
             st.write('The recommended group has', len(region_filter),' domains.')
             st.write('You can order by any variable clicking in the name column')
-            st.dataframe(region_filter.iloc[:,2:15])
+            st.dataframe(region_filter)
 
             if st.checkbox('Show the average tendencies and main statistics of the recommended group'):
                 recommended_group = region_filter['Domain']
@@ -217,7 +232,7 @@ else:
                 st.write('Characteristics of the group', region_filter.iloc[:,1:].describe())
             
             #Selecting the desirable domains
-            selected_indices = st.multiselect('Select your group of Domains by row:', region_filter.index)
+            selected_indices = st.multiselect('Customize your own selection selecting by index:', region_filter.index)
             selected_rows = region_filter.loc[selected_indices]
             st.write('### Selected Domains', selected_rows)
             #Displaying the tendency grapghs of the domains selected in a hide box:
@@ -227,7 +242,7 @@ else:
                 group_historic = daily_data[daily_data['Domain'].isin(domains_selected)]
                 trend_graphs(group_historic)
                 st.write(selected_rows.describe())
-        
+    
         #Adding the subclusters:
         if panel_fl1 ==  '20.000-90.000':
             sub3 = cluster1[cluster1['Subcluster']== 1]
@@ -256,7 +271,7 @@ else:
  #CLUSTER 4   
 
     elif (panel_region == "South America") & (panel_category=="Others"):
-        cluster4= pd.read_csv('Global Cluster 4.csv')
+        cluster4= pd.read_csv('DATA/Global Cluster 4.csv')
         panel_fl4 = st.selectbox('Choose a range of daily traffic', ('20.000-110.000', '110.000-315.000',
                                                           '350.000-600.000', '700.000-1.050.000'))
         def cluster4_operations(data):
@@ -265,10 +280,10 @@ else:
             categories = data['Category'].unique()
             categories_selected = st.multiselect('Select the categories you are interested on', categories)
             categories_filter = data[data['Category'].isin(categories_selected)].iloc[:,2:]
-
+            
             st.write('The recommended group has', len(categories_filter),' domains.')
             st.write('You can order by any variable clicking in the name column')
-            st.dataframe(categories_filter.iloc[:,0:])
+            st.dataframe(categories_filter)
 
             if st.checkbox('Show the average tendencies and main statistics of the recommended group'):
                 recommended_group = categories_filter['Domain']
@@ -277,7 +292,7 @@ else:
                 st.write('Characteristics of the group', categories_filter.iloc[:,1:].describe())
             
             #Selecting the desirable domains
-            selected_indices = st.multiselect('Select your group of Domains by row:', categories_filter.index)
+            selected_indices = st.multiselect('Customize your own selection selecting by index:', categories_filter.index)
             selected_rows = categories_filter.loc[selected_indices]
             st.write('### Selected Domains', selected_rows)
             #Displaying the tendency grapghs of the domains selected in a hide box:
@@ -308,9 +323,8 @@ else:
  #CLUSTER 3   
 
     elif (panel_region == "Others") & (panel_category=="Others"):
-        cluster3= pd.read_csv('Global Cluster 3.csv')
-        panel_fl3 = st.selectbox('Choose a range of daily traffic', ('20.000-65.000', '65.000-150.000','150.000-270.000','280.000-500.000',
-                                                          '630.000-920.000', '2.700.000'))
+        cluster3= pd.read_csv('DATA/Global Cluster 3.csv')
+
 
         def cluster3_operations(data):
             
@@ -336,17 +350,19 @@ else:
                 st.write('Characteristics of the group', categories_filter.iloc[:,1:].describe())
             
             #Selecting the desirable domains
-            selected_indices = st.multiselect('Select your group of Domains by row:', categories_filter.index)
+            selected_indices = st.multiselect('Customize your own selection selecting by index:', categories_filter.index)
             selected_rows = categories_filter.loc[selected_indices]
             st.write('### Selected Domains', selected_rows)
-           
+        
             #Displaying the tendency grapghs of the domains selected in a hide box:
             if st.checkbox('Show the average tendencies and main statistics of the selected group'):
                 domains_selected = selected_rows['Domain']
                 group_historic = daily_data[daily_data['Domain'].isin(domains_selected)]
                 trend_graphs(group_historic)
                 st.write(selected_rows.describe())
-
+            
+        panel_fl3 = st.selectbox('Choose a range of daily traffic', ('20.000-65.000', '65.000-150.000','150.000-270.000','280.000-500.000',
+                                                          '630.000-920.000', '2.700.000'))
         #Adding the subclusters:
      
         if panel_fl3 ==  '20.000-65.000':
