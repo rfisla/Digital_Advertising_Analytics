@@ -1,0 +1,1 @@
+web: sh setup.sh && streamlit run Domains_recommendation_streamlit.py
