@@ -1,20 +1,23 @@
+#STREAMLIT APP - DOMAINS RECOMMENDATION
+
 import streamlit as st
 import pandas as pd
 import altair as alt
-pd.options.display.float_format = '{:.1f}'.format 
+
 
 
 groupby_domains = pd.read_csv('Domains clustered.csv')
+
 @st.cache
 def load_daily_data():
     return pd.read_csv('Daily Report.csv')
 daily_data = load_daily_data()
 
 
-st.title(":chart_with_upwards_trend: WEBSITES ANALYTICS AND RECOMMENDATIONS")
+st.title(":chart_with_upwards_trend: DIGITAL ADVERTISING ANALYTICS")
 
 
-st.header('***Find the domains that fit better to your campaign***')
+st.header('**Reach the right target market for your campaign**')
 
 st.sidebar.header(":gear: PANELS")
 
@@ -48,7 +51,7 @@ panel = st.sidebar.selectbox('Choose a panel', ( "Free use", "Recommendations"))
             
 #USER FREE USE PANEL
 if panel == "Free use":
-    st.markdown('##  FREE USE PANEL')
+    st.markdown('##  *Free use panel*')
 
     #Region filtering
     st.write('### :earth_americas: Region filter')
@@ -79,7 +82,7 @@ if panel == "Free use":
 
     #Button with the information about the columns
     if st.checkbox('Press for info about the columns'):
-        st.markdown('- **Domain**: Publisher who wants to monetize his website.\n'
+        st.markdown('- **Domain**: website.\n'
         '- **Format Loads:** The traffic of the Domain.\n'
         '- **Impressions:**  The number of times that the ad plays (views).\n'
         '- **Format Fill Rate**: Impressions / Format Loads.  This displays the total fill rate of Format tag loads.\n'
@@ -104,7 +107,7 @@ if panel == "Free use":
         domains_selected = selected_rows['Domain']
         group_historic = daily_data[daily_data['Domain'].isin(domains_selected)]
         trend_graphs(group_historic)
-        st.write( selected_rows.describe())
+        st.write('**Main statistics**', selected_rows.describe())
 
     #Individualized Domain Search
 
@@ -136,7 +139,7 @@ if panel == "Free use":
 
 #RECOMMENDATIONS PANEL
 else:
-    st.markdown('## RECOMMENDATIONS PANEL')
+    st.markdown('## *Recommendations panel*')
 
      #Region filter
     st.write('### :earth_americas: Region')
@@ -164,7 +167,7 @@ else:
                 recommended_group = data['Domain']
                 recommended_group_historic = daily_data[daily_data['Domain'].isin(recommended_group)]
                 trend_graphs(recommended_group_historic)
-                st.write('Characteristics of the group', data.iloc[:,1:].describe())
+                st.write('**Main statistics**', data.iloc[:,1:].describe())
             
             #Selecting the desirable domains
             
@@ -183,27 +186,27 @@ else:
         
         #Adding the subclusters
         if panel_fl2 ==  '20.000-80.000':
-            sub1 = cluster2[cluster2['Subcluster']==3]
+            sub1 = cluster2[cluster2['Subcluster']==3].reset_index(drop=True)
             cluster2_operations(sub1)    
 
         elif panel_fl2 ==  '80.000-160.000':
-            sub6 = cluster2[cluster2['Subcluster']==2]
+            sub6 = cluster2[cluster2['Subcluster']==2].reset_index(drop=True)
             cluster2_operations(sub6) 
 
         elif panel_fl2 ==  '160.000-300.000':
-            sub4 = cluster2[cluster2['Subcluster']==6]
+            sub4 = cluster2[cluster2['Subcluster']==6].reset_index(drop=True)
             cluster2_operations(sub4) 
 
         elif panel_fl2 ==  '300.000-500.000':
-            sub2 = cluster2[cluster2['Subcluster']==1]
+            sub2 = cluster2[cluster2['Subcluster']==1].reset_index(drop=True)
             cluster2_operations(sub2)
 
         elif panel_fl2 ==  '500.000-800.000':
-            sub5 = cluster2[cluster2['Subcluster']==5]
+            sub5 = cluster2[cluster2['Subcluster']==5].reset_index(drop=True)
             cluster2_operations(sub5)
 
         else:
-            sub3 = cluster2[cluster2['Subcluster']==4]
+            sub3 = cluster2[cluster2['Subcluster']==4].reset_index(drop=True)
             cluster2_operations(sub3)                   
     
  #CLUSTER 1   
@@ -218,7 +221,7 @@ else:
             #Filter by region
             regions = data['Geographical zone'].unique()
             regions_selected= st.multiselect('In wich region/s do you want to deploy your campaign?', regions)
-            region_filter = data[data['Geographical zone'].isin(regions_selected)].iloc[:,2:]
+            region_filter = data[data['Geographical zone'].isin(regions_selected)].iloc[:,2:].reset_index(drop=True)
 
             st.write('The recommended group has', len(region_filter),' domains.')
             st.write('You can order by any variable clicking in the name column')
@@ -228,7 +231,7 @@ else:
                 recommended_group = region_filter['Domain']
                 recommended_group_historic = daily_data[daily_data['Domain'].isin(recommended_group)]
                 trend_graphs(recommended_group_historic)
-                st.write('Characteristics of the group', region_filter.iloc[:,1:].describe())
+                st.write('**Main statistics**', region_filter.iloc[:,1:].describe())
             
             #Selecting the desirable domains
             selected_indices = st.multiselect('Customize your own selection selecting by index:', region_filter.index)
@@ -278,7 +281,7 @@ else:
             #Filtering by category
             categories = data['Category'].unique()
             categories_selected = st.multiselect('Select the categories you are interested on', categories)
-            categories_filter = data[data['Category'].isin(categories_selected)].iloc[:,2:]
+            categories_filter = data[data['Category'].isin(categories_selected)].iloc[:,2:].reset_index(drop=True)
             
             st.write('The recommended group has', len(categories_filter),' domains.')
             st.write('You can order by any variable clicking in the name column')
@@ -288,7 +291,7 @@ else:
                 recommended_group = categories_filter['Domain']
                 recommended_group_historic = daily_data[daily_data['Domain'].isin(recommended_group)]
                 trend_graphs(recommended_group_historic)
-                st.write('Characteristics of the group', categories_filter.iloc[:,1:].describe())
+                st.write('**Main statistics**', categories_filter.iloc[:,1:].describe())
             
             #Selecting the desirable domains
             selected_indices = st.multiselect('Customize your own selection selecting by index:', categories_filter.index)
@@ -336,7 +339,7 @@ else:
             #Filtering by category
             categories = region_filter['Category'].unique()
             categories_selected = st.multiselect('Select the categories you are interested on', categories)
-            categories_filter = region_filter[region_filter['Category'].isin(categories_selected)]
+            categories_filter = region_filter[region_filter['Category'].isin(categories_selected)].reset_index(drop=True)
             
             st.write('The recommended group has', len(categories_filter),' domains.')
             st.write('You can order by any variable clicking in the name column.')
@@ -346,7 +349,7 @@ else:
                 recommended_group = categories_filter['Domain']
                 recommended_group_historic = daily_data[daily_data['Domain'].isin(recommended_group)]
                 trend_graphs(recommended_group_historic)
-                st.write('Characteristics of the group', categories_filter.iloc[:,1:].describe())
+                st.write('**Main statistics**', categories_filter.iloc[:,1:].describe())
             
             #Selecting the desirable domains
             selected_indices = st.multiselect('Customize your own selection selecting by index:', categories_filter.index)
@@ -393,23 +396,3 @@ else:
 
 
 
-
-
-# por tramos de trafico: una vez que elija un tramo mostrarle el cluster correspondiente avisando del nº de domains que tiene
-# una vez elija el cluster que aparezcan las caracteristicas generales del cluster
-# y dar opcion de filtrar por cualquier variable (primero category y luego el resto)
-# añadir a una cesta y que pueda ir para atrás buscando otros dominios 
-
-#interactive dataframe
-# st.dataframe(groupby_domains.style.highlight_max(axis=0))
-#def user_input_features():
-    #format_loads=st.sidebar.slider('Format Loads', 1,2000000,(100000, 200000), step=29999)
-    #impressions=st.sidebar.slider('Impressions', 1,100000,(5000, 10000), step=5000)
-    #data={'Format Loads':format_loads, 'Impressions':impressions}
-    #features=pd.DataFrame(data)
-
-    #return features
-#df=user_input_features()
-#st.write(df)
-
-#st.exception('NameError('Name three not defined')"
