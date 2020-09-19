@@ -1,4 +1,4 @@
-# Websites Traffic Analytics Project
+# Digital Advertising Analytics Project
 
 This repo was created to store the presentation throught Streamlit of the results of Kschool Data Science Master´s project.
 
