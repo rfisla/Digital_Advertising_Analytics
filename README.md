@@ -6,4 +6,4 @@ The last goal of the project was to create an interactive tool which allows the 
 
 **For more info about the project and the app, check this [repo](https://github.com/rfisla/FINAL-PROJECT-OF-KSCHOOL-MASTER.git)**.
 
-**The interactive app was deploy to Heroku and it is available in this url: https://domains-recommentation.herokuapp.com/**
+**The interactive app was deployed to Heroku and it is available in this url: https://domains-recommentation.herokuapp.com/**
